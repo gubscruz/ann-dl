@@ -1,0 +1,54 @@
+{
+  "taxas_mistura": {
+    "0.5": 0.0,
+    "1.0": 0.05,
+    "2.0": 0.1925,
+    "4.0": 0.4825
+  },
+  "menor_rij_s1": 1.3258252147247767,
+  "par_menor_rij": "(0, 1)",
+  "menor_rij_s2": 0.6629126073623883,
+  "primeira_escala_amostral_nao_separavel": 1.0,
+  "distancia_centros_dataset_I": 3.3987891458487307,
+  "distancia_centros_dataset_II": 0.2215300222758209,
+  "variancia_explicada_dataset_I": [
+    0.5053972333710918,
+    0.1570554228475596
+  ],
+  "variancia_explicada_dataset_II": [
+    0.21374207773918855,
+    0.20899811510797967
+  ],
+  "proporcao_transportados": 0.5036236051995858,
+  "foodcourt_media_treino": 462.1447677836567,
+  "foodcourt_mediana_treino": 0.0,
+  "shape_treino": [
+    6954,
+    21
+  ],
+  "shape_teste": [
+    1739,
+    21
+  ],
+  "intervalo_treino": [
+    -1.0,
+    1.0
+  ],
+  "intervalo_teste": [
+    -1.0,
+    1.0
+  ],
+  "nan_treino": 0,
+  "nan_teste": 0,
+  "celulas_teste_clipping": 1,
+  "erros_regra_radial": 1,
+  "erros_separador_radial_da_amostra": 0,
+  "dataset_sha256": "17336d553f49ebdf6ecb266d2b5d3746e5dd308445f7c7864141c4f28d2a88d0",
+  "versoes": {
+    "Python": "3.13.4",
+    "numpy": "2.5.3",
+    "pandas": "3.0.5",
+    "matplotlib": "3.11.1",
+    "scikit-learn": "1.9.1"
+  }
+}
