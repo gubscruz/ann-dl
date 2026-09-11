@@ -24,18 +24,12 @@ são exclusivamente as permitidas; os utilitários Jupyter servem apenas para mo
 o notebook e exportar este relatório. Os resultados abaixo foram calculados, e os
 valores também estão escritos nas análises e no resumo final.
 
-!!! info "Uso de IA declarado"
-    OpenAI Codex na implementação, na geração das figuras, na redação das análises e na organização do site. Código executado e resultados verificados.
+!!! info "IA usada para ajudar em alguns passos da implementação, reescrita do texto do relatório e na organização do site (além de deixar mais bonito)"
 
 [Baixar código executável](code/analise.py){ .md-button } [Notebook executado](code/relatorio.ipynb){ .md-button }
 
 O código abaixo é incluído do arquivo versionado, sem cópias independentes coladas na página. Instruções de reprodução estão no [README do repositório](https://github.com/gubscruz/ann-dl#reproduzir-a-entrega).
 
-??? example "Código executado - bloco 01"
-
-    ```python title="code/analise.py"
-    --8<-- "docs/exercises/data/code/analise.py:bloco_01"
-    ```
 
 ## Exercício 1
 
