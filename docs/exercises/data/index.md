@@ -26,10 +26,6 @@ valores também estão escritos nas análises e no resumo final.
 
 !!! info "IA usada para ajudar em alguns passos da implementação, reescrita do texto do relatório e na organização do site (além de deixar mais bonito)"
 
-[Baixar código executável](code/analise.py){ .md-button } [Notebook executado](code/relatorio.ipynb){ .md-button }
-
-O código abaixo é incluído do arquivo versionado, sem cópias independentes coladas na página. Instruções de reprodução estão no [README do repositório](https://github.com/gubscruz/ann-dl#reproduzir-a-entrega).
-
 
 ## Exercício 1
 
