@@ -1,13 +1,13 @@
 ---
 exercise: data
-ai_use: "OpenAI Codex na implementação, na geração das figuras, na redação das análises e na organização do site. Código executado e resultados verificados."
-title: Data — Preparação e análise de dados
+ai_use: "IA usada para ajudar em alguns passos da implementação, reescrita do texto do relatórioe na organização do site"
+title: Data - Preparação e análise de dados
 ---
 
 
 # Preparação e análise de dados para redes neurais
 
-**Atividade 1 — Data | Espalhamento, geometria e pré-processamento**
+**Atividade 1 - Data | Espalhamento, geometria e pré-processamento**
 
 Este relatório compara nuvens gaussianas em 2D, duas estruturas de classes em 5D
 e a preparação do Spaceship Titanic para uma rede com ativação `tanh`.
@@ -31,7 +31,7 @@ valores também estão escritos nas análises e no resumo final.
 
 O código abaixo é incluído do arquivo versionado, sem cópias independentes coladas na página. Instruções de reprodução estão no [README do repositório](https://github.com/gubscruz/ann-dl#reproduzir-a-entrega).
 
-??? example "Código executado — bloco 01"
+??? example "Código executado - bloco 01"
 
     ```python title="code/analise.py"
     --8<-- "docs/exercises/data/code/analise.py:bloco_01"
@@ -39,7 +39,7 @@ O código abaixo é incluído do arquivo versionado, sem cópias independentes c
 
 ## Exercício 1
 
-### A — Gere as nuvens
+### A - Gere as nuvens
 
 Cada classe contém **100 pontos**, totalizando **400 amostras e duas features**.
 As duas coordenadas são independentes dentro de cada gaussiana: suas covariâncias
@@ -54,17 +54,17 @@ as médias amostrais. O esboço de fronteiras pedido em C aparece na própria fi
 | 2 | [8, 1] | [0,9; 0,9] |
 | 3 | [15, 4] | [0,5; 2,0] |
 
-??? example "Código executado — bloco 02"
+??? example "Código executado - bloco 02"
 
     ```python title="code/analise.py"
     --8<-- "docs/exercises/data/code/analise.py:bloco_02"
     ```
 
-![Figura 1 — Nuvens originais, centros especificados e esboço de fronteiras; nenhuma rede treinada.](figures/figura_1.png)
+![Figura 1 - Nuvens originais, centros especificados e esboço de fronteiras; nenhuma rede treinada.](figures/figura_1.png)
 
 *Figura 1. Nuvens originais, centros especificados e esboço de fronteiras; nenhuma rede treinada.*
 
-### B — Mais ou menos espalhado
+### B - Mais ou menos espalhado
 
 Construí **quatro datasets**, cada um com as quatro classes e 400 pontos.
 O dataset de $s=1$ é exatamente o do item A. Para $s=0,5$, $s=2$ e $s=4$,
@@ -76,17 +76,17 @@ A taxa de mistura compara distâncias euclidianas às **quatro médias especific
 $m(s)=N^{-1}\sum_n 1[\arg\min_k\|x_n-\mu_k\|\ne y_n]$.
 Isso é uma medida geométrica, sem estimar parâmetros ou treinar um classificador.
 
-??? example "Código executado — bloco 03"
+??? example "Código executado - bloco 03"
 
     ```python title="code/analise.py"
     --8<-- "docs/exercises/data/code/analise.py:bloco_03"
     ```
 
-![Figura 2 — As mesmas quatro classes em quatro escalas, com limites de eixos compartilhados.](figures/figura_2.png)
+![Figura 2 - As mesmas quatro classes em quatro escalas, com limites de eixos compartilhados.](figures/figura_2.png)
 
 *Figura 2. As mesmas quatro classes em quatro escalas, com limites de eixos compartilhados.*
 
-![Figura 3 — Taxa de mistura total e por classe em função do fator de escala.](figures/figura_3.png)
+![Figura 3 - Taxa de mistura total e por classe em função do fator de escala.](figures/figura_3.png)
 
 *Figura 3. Taxa de mistura total e por classe em função do fator de escala.*
 
@@ -127,7 +127,7 @@ admitem separação estrita por uma reta se, e somente se, seus fechos convexos
 são disjuntos. O código usa o algoritmo da cadeia monótona e as projeções nas
 normais às arestas dos polígonos, apenas com NumPy, sem treinar modelos.
 
-??? example "Código executado — bloco 04"
+??? example "Código executado - bloco 04"
 
     ```python title="code/analise.py"
     --8<-- "docs/exercises/data/code/analise.py:bloco_04"
@@ -154,7 +154,7 @@ escala positiva em que uma separação populacional perfeita deixe de existir:
 ela nunca foi perfeita. A resposta sobre a primeira escala refere-se aos
 datasets finitos observados e à separação estrita entre os pares de classes.
 
-### C — Análise
+### C - Análise
 
 Em $s=1$, a classe 0 é alongada verticalmente e se sobrepõe principalmente à
 classe 1. A classe 2 é mais compacta e fica à direita e abaixo da classe 1;
@@ -187,7 +187,7 @@ erro ótimo, pois usa uma regra geométrica específica.
 
 ## Exercício 2
 
-### A — Dataset I: gaussianas deslocadas
+### A - Dataset I: gaussianas deslocadas
 
 Gerei **500 amostras da classe A e 500 da classe B em cinco dimensões**, usando
 as duas matrizes de covariância exatamente como no enunciado. Conferi que elas
@@ -195,13 +195,13 @@ são definidas positivas antes do sorteio. A primeira tem correlação positiva
 entre as duas primeiras features; a segunda tem covariância −0,7 entre elas
 e variâncias marginais de 1,5.
 
-??? example "Código executado — bloco 05"
+??? example "Código executado - bloco 05"
 
     ```python title="code/analise.py"
     --8<-- "docs/exercises/data/code/analise.py:bloco_05"
     ```
 
-### B — Dataset II: cascas concêntricas
+### B - Dataset II: cascas concêntricas
 
 Para cada classe, sorteei 500 vetores normais isotrópicos em $\mathbb{R}^5$ e
 normalizei suas normas. Pela simetria rotacional, isso fornece direções uniformes
@@ -210,13 +210,13 @@ ambos: $x=\rho u$. Os parâmetros dos raios são **média 2,0 e desvio 0,4** par
 e **média 5,0 e desvio 0,4** para D. Embora chamada de núcleo, C se concentra
 perto do raio 2; não é uma distribuição uniforme no interior de uma bola.
 
-??? example "Código executado — bloco 06"
+??? example "Código executado - bloco 06"
 
     ```python title="code/analise.py"
     --8<-- "docs/exercises/data/code/analise.py:bloco_06"
     ```
 
-### C — Visualize e compare
+### C - Visualize e compare
 
 Ajustei uma PCA independente em cada dataset de 1.000 pontos, com centralização
 automática e **sem padronizar as features**: todas estão na mesma unidade e as
@@ -225,17 +225,17 @@ aleatoriedade adicional. As distâncias entre centros são calculadas pelas
 **médias amostrais em 5D**; apresento também as distâncias populacionais para
 explicitar a flutuação da amostragem.
 
-??? example "Código executado — bloco 07"
+??? example "Código executado - bloco 07"
 
     ```python title="code/analise.py"
     --8<-- "docs/exercises/data/code/analise.py:bloco_07"
     ```
 
-![Figura 4 — Projeções PCA em duas dimensões dos dois datasets originalmente em 5D.](figures/figura_4.png)
+![Figura 4 - Projeções PCA em duas dimensões dos dois datasets originalmente em 5D.](figures/figura_4.png)
 
 *Figura 4. Projeções PCA em duas dimensões dos dois datasets originalmente em 5D.*
 
-![Figura 5 — Histogramas sobrepostos dos raios medidos no espaço original de cinco dimensões.](figures/figura_5.png)
+![Figura 5 - Histogramas sobrepostos dos raios medidos no espaço original de cinco dimensões.](figures/figura_5.png)
 
 *Figura 5. Histogramas sobrepostos dos raios medidos no espaço original de cinco dimensões.*
 
@@ -263,7 +263,7 @@ descartar três coordenadas permite que pontos da casca externa se projetem pert
 do núcleo. A maior variância explicada, sozinha, não provaria melhor classificação:
 a conclusão combina essa medida, o deslocamento dos centros e a geometria observada.
 
-### D — Análise
+### D - Análise
 
 No Dataset II, centros quase coincidentes junto com raios bem distintos indicam
 que **a distância à origem discrimina as classes, e a direção não**. Um hiperplano
@@ -292,7 +292,7 @@ raios médios 2 e 5 fornecidos pelo enunciado; não foi ajustado aos dados.
 A função é quadrática nas entradas originais, embora uma comparação linear
 seja suficiente **depois** de criar a feature não linear $z=\sum_i x_i^2$.
 
-??? example "Código executado — bloco 08"
+??? example "Código executado - bloco 08"
 
     ```python title="code/analise.py"
     --8<-- "docs/exercises/data/code/analise.py:bloco_08"
@@ -323,13 +323,13 @@ de rede ou de qualquer modelo estimado por algoritmo.
 
 ## Exercício 3
 
-### A — Conheça os dados
+### A - Conheça os dados
 
 O **Spaceship Titanic** é uma tarefa de classificação binária: `Transported=True`
 indica que o passageiro foi transportado para outra dimensão durante o encontro
 da nave com uma anomalia. As demais colunas descrevem o passageiro e seus gastos.
 Fonte do objetivo e do dicionário de dados:
-[Kaggle — Spaceship Titanic](https://www.kaggle.com/competitions/spaceship-titanic/data).
+[Kaggle - Spaceship Titanic](https://www.kaggle.com/competitions/spaceship-titanic/data).
 
 O download direto do Kaggle pede autenticação e aceite das regras. Para executar
 esta atividade, usei uma
@@ -354,7 +354,7 @@ em cada coluna. Elas atendem à descrição pedida e **não alimentam as transfo
 Para deixar a separação explícita, os índices de treino e teste já são reservados
 logo após a leitura, antes dessas estatísticas; o item B detalha o procedimento.
 
-??? example "Código executado — bloco 09"
+??? example "Código executado - bloco 09"
 
     ```python title="code/analise.py"
     --8<-- "docs/exercises/data/code/analise.py:bloco_09"
@@ -411,7 +411,7 @@ mediana = **0,00** e máximo =
 não representa o passageiro típico. Uso “cauda pesada” no sentido exploratório
 do enunciado, sem afirmar uma família probabilística específica.
 
-### B — Separe antes de transformar
+### B - Separe antes de transformar
 
 O split implementado acima embaralha separadamente os índices de cada classe
 com o mesmo `rng`, reserva aproximadamente 20% de cada uma para teste e embaralha
@@ -426,7 +426,7 @@ uma aproximação de dados ainda não vistos, à qual se aplicam os mesmos parâ
 As estatísticas globais de A são somente descritivas, e nunca são reutilizadas
 nos objetos de pré-processamento.
 
-??? example "Código executado — bloco 10"
+??? example "Código executado - bloco 10"
 
     ```python title="code/analise.py"
     --8<-- "docs/exercises/data/code/analise.py:bloco_10"
@@ -445,7 +445,7 @@ treino** e **50,3738% no teste**.
 calculadas sobre valores observados. Estes são os números retomados no item 11
 do resumo; diferem da descrição do arquivo completo apresentada em A.
 
-### C — Pré-processe
+### C - Pré-processe
 
 **Faltantes numéricos.** Uso a mediana de cada coluna, aprendida somente no treino.
 Ela resiste à influência dos gastos extremos; para os gastos a mediana de treino
@@ -481,7 +481,7 @@ O intervalo de saída de `tanh` não impõe uma restrição matemática às entr
 a escala escolhida é uma medida de condicionamento. Ela não garante ausência
 de saturação, pois as pré-ativações também dependem de pesos e vieses.
 
-??? example "Código executado — bloco 11"
+??? example "Código executado - bloco 11"
 
     ```python title="code/analise.py"
     --8<-- "docs/exercises/data/code/analise.py:bloco_11"
@@ -544,7 +544,7 @@ O truncamento torna o intervalo garantido, mas perde a distinção entre valores
 que ultrapassam o mesmo extremo. O log reduz a influência da cauda antes desse
 passo. A escolha e seus limites foram fixados sem ajustar parâmetros no teste.
 
-### D — Verifique e visualize
+### D - Verifique e visualize
 
 A Figura 6 usa apenas passageiros do **treino**, coloridos por `Transported`.
 O primeiro painel mostra os gastos observados, omitindo somente os NaN dessa
@@ -554,13 +554,13 @@ imputados. As contagens no eixo vertical usam escala logarítmica para tornar a
 cauda visível, e isso está indicado no rótulo; a transformação `log1p` da feature
 ocorre no eixo horizontal do painel intermediário.
 
-??? example "Código executado — bloco 12"
+??? example "Código executado - bloco 12"
 
     ```python title="code/analise.py"
     --8<-- "docs/exercises/data/code/analise.py:bloco_12"
     ```
 
-![Figura 6 — FoodCourt no treino: valores observados, após log1p e após normalização.](figures/figura_6.png)
+![Figura 6 - FoodCourt no treino: valores observados, após log1p e após normalização.](figures/figura_6.png)
 
 *Figura 6. FoodCourt no treino: valores observados, após log1p e após normalização.*
 
@@ -589,7 +589,7 @@ de uma futura avaliação, e limitar os extremos do teste controla a escala ao
 custo de perder informação além dos limites do treino. Sem treinar modelos,
 essas são implicações esperadas das transformações, não ganhos de desempenho medidos.
 
-??? example "Código executado — bloco 13"
+??? example "Código executado - bloco 13"
 
     ```python title="code/analise.py"
     --8<-- "docs/exercises/data/code/analise.py:bloco_13"
@@ -606,10 +606,10 @@ As distâncias dos itens 6 e 7 usam centros amostrais em 5D. O item 13 inclui o 
 | 3 | Taxa de mistura em s=2.0 | 19,25% (77/400) |
 | 4 | Taxa de mistura em s=4.0 | 48,25% (193/400) |
 | 5 | Menor r_ij em s=1.0 e qual é o par | 1,3258; par (0, 1) |
-| 6 | Distância entre os centros — Dataset I | 3,3988 |
-| 7 | Distância entre os centros — Dataset II | 0,2215 |
-| 8 | Variância explicada PC1 + PC2 — Dataset I | 66,2453% |
-| 9 | Variância explicada PC1 + PC2 — Dataset II | 42,2740% |
+| 6 | Distância entre os centros - Dataset I | 3,3988 |
+| 7 | Distância entre os centros - Dataset II | 0,2215 |
+| 8 | Variância explicada PC1 + PC2 - Dataset I | 66,2453% |
+| 9 | Variância explicada PC1 + PC2 - Dataset II | 42,2740% |
 | 10 | Proporção da classe positiva em Transported | 0,503624 (50,3624%) |
 | 11 | Média e mediana de FoodCourt no treino, antes de transformar | Média 462,1448; mediana 0,0000 |
 | 12 | shape final da matriz de features de treino | (6954, 21) |
