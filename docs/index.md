@@ -1,100 +1,41 @@
-# Template de Entrega
+---
+title: Início
+hide:
+  - toc
+---
 
+# Redes Neurais e Deep Learning
 
-???+ info inline end "Edição"
+<div class="portfolio-intro" markdown>
 
-    2025.1
+**gubscruz · Portfólio da disciplina**
 
+Sou gubscruz. Este repositório reúne meus exercícios e projetos do semestre,
+com os relatórios, o código utilizado e as figuras de cada atividade.
 
-## Grupo/Kit X
+[Ler o exercício Data](exercises/data/index.md){ .md-button .md-button--primary }
+[Ver o repositório](https://github.com/gubscruz/ann-dl){ .md-button }
 
-1. João da Silva
-1. Pedro de Souza
-1. Maria Oliveira
-1. Grupo K
-    - João da Silva
-    - Pedro de Souza
+</div>
 
+## Exercícios
 
+| Atividade | Tema | Situação |
+| --- | --- | --- |
+| [Data](exercises/data/index.md) | Espalhamento, geometria em 2D e 5D, PCA e pré-processamento | Relatório completo |
+| [Perceptron](exercises/perceptron/index.md) | Perceptron | A desenvolver |
+| [MLP](exercises/mlp/index.md) | Redes multicamadas | A desenvolver |
+| [VAE](exercises/vae/index.md) | Autoencoders variacionais | A desenvolver |
 
-!!! tip "Instruções"
+## Projetos
 
-    Vocês devem utilizar este template como um bloco de notas para registrar o que foi feito e o que falta fazer. Vocês devem adicionar as informações necessárias.
-    O template deve ser editado e atualizado a cada entrega, registrando assim a data de entrega e o que foi feito até o momento via Git.
+Os trabalhos maiores da disciplina serão organizados na seção [Projetos](projects/index.md).
 
-## Entregas
+## Como ler este portfólio
 
-- [x] Roteiro 1 - Data 23/02/2025
-- [ ] Roteiro 2
-- [ ] Roteiro 3
-- [ ] Roteiro 4
-- [ ] Projeto
+Cada relatório segue os itens do enunciado e termina com uma tabela de resultados.
+O código aparece por inclusão de arquivos em `code/`, e as imagens estão
+versionadas em `figures/`. O uso de IA é declarado em cada entrega.
 
-## Diagramas
-
-Use o [Mermaid](https://mermaid.js.org/intro/){:target='_blank'} para criar os diagramas de documentação.
-
-[Mermaid Live Editor](https://mermaid.live/){:target='_blank'}
-
-
-``` mermaid
-flowchart TD
-    Deployment:::orange -->|defines| ReplicaSet
-    ReplicaSet -->|manages| pod((Pod))
-    pod:::red -->|runs| Container
-    Deployment -->|scales| pod
-    Deployment -->|updates| pod
-
-    Service:::orange -->|exposes| pod
-
-    subgraph  
-        ConfigMap:::orange
-        Secret:::orange
-    end
-
-    ConfigMap --> Deployment
-    Secret --> Deployment
-    classDef red fill:#f55
-    classDef orange fill:#ffa500
-```
-
-
-
-## Códigos
-
-=== "De um arquivo remoto"
-
-    ``` { .yaml .copy .select linenums='1' title="main.yaml" }
-    --8<-- "https://raw.githubusercontent.com/hsandmann/documentation.template/refs/heads/main/.github/workflows/main.yaml"
-    ```
-
-=== "Anotações no código"
-
-    ``` { .yaml title="compose.yaml" }
-    name: app
-
-        db:
-            image: postgres:17
-            environment:
-                POSTGRES_DB: ${POSTGRES_DB:-projeto} # (1)!
-                POSTGRES_USER: ${POSTGRES_USER:-projeto}
-                POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-projeto}
-            ports:
-                - 5432:5432 #(2)!
-    ```
-
-    1.  Caso a variável de ambiente `POSTGRES_DB` não exista ou seja nula - não seja definida no arquivo `.env` - o valor padrão será `projeto`. Vide [documentação](https://docs.docker.com/reference/compose-file/interpolation/){target='_blank'}.
-
-    2. Aqui é feito um túnel da porta 5432 do container do banco de dados para a porta 5432 do host (no caso localhost). Em um ambiente de produção, essa porta não deve ser exposta, pois ninguém de fora do compose deveria acessar o banco de dados diretamente.
-
-
-## Exemplo de vídeo
-
-Lorem ipsum dolor sit amet
-
-<iframe width="100%" height="470" src="https://www.youtube.com/embed/3574AYQml8w" allowfullscreen></iframe>
-
-
-## Referências
-
-[Material for MkDocs](https://squidfunk.github.io/mkdocs-material/reference/){:target='_blank'}
+Este site parte do [template da disciplina](https://github.com/hsandmann/documentation.template),
+com MkDocs, Material e publicação pelo GitHub Actions.

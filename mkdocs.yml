@@ -1,74 +1,61 @@
-site_name: Template de Entrega
-site_author: Sandmann, H.
-site_url: https://hsandmann.github.io/documentation.template
-repo_url: https://github.com/hsandmann/documentation.template
-repo_name: github/documentation.template
+site_name: gubscruz · Redes Neurais
+site_author: gubscruz
+site_description: Portfólio de exercícios e projetos de Redes Neurais e Deep Learning.
+site_url: https://gubscruz.github.io/ann-dl/
+repo_url: https://github.com/gubscruz/ann-dl
+repo_name: gubscruz/ann-dl
+edit_uri: edit/main/docs/
+use_directory_urls: true
 
 theme:
   name: material
+  language: pt-BR
+  font: false
+  icon:
+    logo: material/graph-outline
+    repo: fontawesome/brands/github
   palette:
-    # primary: grey
-    # Light mode
-    - scheme: default
-      primary: grey
-      toggle:
-        icon: material/toggle-switch-off-outline
-        name: Switch to dark mode
-
-    # Palette toggle for automatic mode
-    - media: "(prefers-color-scheme)"
-      primary: grey
-      toggle:
-        icon: material/toggle-switch
-        name: Switch to light mode
-
-    # Palette toggle for light mode
     - media: "(prefers-color-scheme: light)"
-      scheme: default 
-      primary: grey
+      scheme: default
+      primary: teal
+      accent: teal
       toggle:
-        icon: material/toggle-switch-off-outline
-        name: Switch to dark mode
-
-    # Palette toggle for dark mode
+        icon: material/weather-night
+        name: Usar tema escuro
     - media: "(prefers-color-scheme: dark)"
-      primary: grey
       scheme: slate
+      primary: teal
+      accent: teal
       toggle:
-        icon: material/toggle-switch
-        name: Switch to system preference
+        icon: material/weather-sunny
+        name: Usar tema claro
   features:
     - content.code.copy
     - content.code.select
-    - content.code.annotate
-    - content.tooltips
-    - navigation.instant
-    - navigation.instant.progress
+    - content.action.view
     - navigation.top
-    - navigation.path
     - navigation.tracking
-    - navigation.expand
-  icon:
-    # logo: assets/images/devops
-    admonition:
-      note: fontawesome/solid/note-sticky
-      abstract: fontawesome/solid/book
-      info: fontawesome/solid/circle-info
-      tip: fontawesome/solid/bullhorn
-      success: fontawesome/solid/check
-      question: fontawesome/solid/circle-question
-      warning: fontawesome/solid/triangle-exclamation
-      failure: fontawesome/solid/bomb
-      danger: fontawesome/solid/skull
-      bug: fontawesome/solid/robot
-      example: fontawesome/solid/flask
-      quote: fontawesome/solid/quote-left
+    - navigation.footer
+    - search.suggest
+    - search.highlight
+
+nav:
+  - Início: index.md
+  - Exercícios:
+      - Data: exercises/data/index.md
+      - Perceptron: exercises/perceptron/index.md
+      - MLP: exercises/mlp/index.md
+      - VAE: exercises/vae/index.md
+  - Projetos: projects/index.md
 
 markdown_extensions:
   - admonition
   - attr_list
   - md_in_html
-  - markdown_grid_tables
+  - tables
+  - toc:
+      permalink: true
+      toc_depth: 3
   - pymdownx.arithmatex:
       generic: true
   - pymdownx.details
@@ -76,76 +63,28 @@ markdown_extensions:
       anchor_linenums: true
       line_spans: __span
       pygments_lang_class: true
-  - pymdownx.emoji:
-      emoji_index: !!python/name:material.extensions.emoji.twemoji 
-      emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - pymdownx.inlinehilite
   - pymdownx.snippets:
-      url_download: true
-  - pymdownx.superfences:
-      custom_fences:
-        - name: mermaid
-          class: mermaid
-          format: !!python/name:pymdownx.superfences.fence_code_format
-        - name: python
-          class: python
-          validator: !!python/name:markdown_exec.validator
-          format: !!python/name:markdown_exec.formatter
+      base_path: ["."]
+      check_paths: true
+  - pymdownx.superfences
   - pymdownx.tabbed:
       alternate_style: true
-  - pymdownx.tasklist:
-      custom_checkbox: true  
-  - footnotes
-  - pymdownx.critic
-  - pymdownx.caret
-  - pymdownx.keys
-  - pymdownx.mark
-  - pymdownx.tilde
-  - pymdownx.blocks.caption
-  - tables
-      
+
 plugins:
-  - glightbox
+  - search:
+      lang: pt
   - git-revision-date-localized:
       enable_creation_date: true
-  - git-authors
-  - git-committers:
-      repository: hsandmann/documentation.template
-      branch: main
-  - search
-  - badges
-  - minify:
-      minify_html: true
-  - markdown-exec
-  - render_swagger:
-      allow_arbitrary_locations : true
-  - termynal:
-      prompt_literal_start:
-        - "$"
-        - ">"
+      type: date
+      locale: pt
+      timezone: America/Sao_Paulo
+      fallback_to_build_date: true
 
-# mkdocs-jupyter
-  - mkdocs-jupyter:
-      execute: false
-      allow_errors: false
-
+extra_css:
+  - stylesheets/extra.css
 extra_javascript:
-  - https://unpkg.com/mathjax/es5/tex-mml-chtml.js
-  # - https://polyfill.io/v3/polyfill.min.js?features=es6
-  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
-  - https://fastly.jsdelivr.net/npm/jquery/dist/jquery.min.js
-  - https://fastly.jsdelivr.net/npm/echarts/dist/echarts.min.js
-
-  # Para a implementação do mkdocs-jupyter
   - javascripts/mathjax.js
+  - https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js
 
-nav:
-  - Home: index.md
-  - This documentation: ./thisdocumentation/index.md
-  - Roteiros:
-    - Roteiro 1: ./roteiro1/index.md
-    - Roteiro 2: ./roteiro2/index.md
-    - Roteiro 3: ./roteiro3/index.md
-    - Roteiro 4: ./roteiro4/index.md
-    - Notebook 1: ./notebook1/ex1_data.ipynb
-  - Projeto: ./projeto/index.md
+copyright: gubscruz · Portfólio de Redes Neurais e Deep Learning

@@ -1,18 +1,15 @@
-markdown-grid-tables
-markdown-exec[ansi]
-mkdocs-badges
-mkdocs-material
-mkdocs-material-extensions
-mkdocs-minify-plugin
-mkdocs-glightbox
-mkdocs-git-authors-plugin
-mkdocs-git-committers-plugin-2
-mkdocs-git-revision-date-localized-plugin
-mkdocs-render-swagger-plugin
-mkdocs-jupyter
-termynal
-matplotlib
-numpy
-pandas
-yfinance
+# Cálculos da atividade: apenas as bibliotecas científicas permitidas.
+numpy==2.5.3
+pandas==3.0.5
+matplotlib==3.11.1
+scikit-learn==1.9.1
 
+# Empacotamento e execução do notebook complementar.
+nbformat==5.11.1
+ipykernel==7.3.0
+
+# Site baseado no template MkDocs + Material da disciplina.
+mkdocs==1.6.1
+mkdocs-material==9.7.7
+mkdocs-git-revision-date-localized-plugin==1.5.4
+pymdown-extensions==11.0.2

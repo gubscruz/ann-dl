@@ -1,5 +1,8 @@
 site/
+.venv/
 env/
 .cache/
 .vscode/
-target/
+__pycache__/
+.ipynb_checkpoints/
+.DS_Store
