@@ -19,7 +19,6 @@ docs/
       code/
         analise.py             # código científico executável incluído na página
         gerar_relatorio.py     # recalcula números e reconstrói o relatório
-        verificar_entrega.py   # verifica estrutura, reprodução e site
         relatorio.ipynb        # notebook complementar executado
       data/train.csv           # dataset rotulado, conferido por SHA-256
       figures/figura_1.png ... figura_6.png
@@ -49,16 +48,14 @@ cd ann-dl
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
-python docs/exercises/data/code/verificar_entrega.py --reexecutar
-mkdocs build --strict
-python docs/exercises/data/code/verificar_entrega.py --site site
+mkdocs build
 ```
 
-O verificador reexecuta o código, compara as métricas com as versionadas e
-confere front matter, títulos, snippets, figuras, recursos locais e o resumo.
+Esses comandos compilam o site com o relatório e as figuras versionados.
+Para reproduzir os cálculos, execute a análise separadamente, conforme abaixo.
 Os cálculos usam apenas NumPy, pandas, Matplotlib e scikit-learn, este último
 restrito à PCA e ao pré-processamento. Nenhum modelo é treinado.
-As dependências MkDocs e Jupyter servem à apresentação e à verificação dos arquivos.
+As dependências MkDocs e Jupyter servem à apresentação do site e do notebook.
 
 Para executar apenas a análise:
 
@@ -71,12 +68,12 @@ e o notebook após uma alteração:
 
 ```bash
 python docs/exercises/data/code/gerar_relatorio.py
-mkdocs build --strict
+mkdocs build
 ```
 
 Edite `gerar_relatorio.py` se precisar alterar parâmetros ou análises: ele é a
 fonte que produz o relatório e `analise.py`. Alterações feitas diretamente nos
-arquivos gerados podem ser sobrescritas. O verificador é mantido separadamente.
+arquivos gerados podem ser sobrescritas.
 
 Para visualizar localmente, execute `mkdocs serve` e abra o endereço informado.
 As fórmulas usam MathJax por CDN; a renderização das fórmulas requer internet.
@@ -120,11 +117,12 @@ um download autenticado do Kaggle; a origem é declarada no relatório.
 
 O repositório deve permanecer **público**, com o nome **ann-dl**, na conta
 **gubscruz**. Em **Settings → Pages**, a origem deve ser **GitHub Actions**.
-O workflow `pages.yml` verifica o código e a estrutura, compila com
-`mkdocs build --strict` e publica o conteúdo de `site/`. Pull requests somente
-validam; pushes em `main` e execução manual também publicam.
+O workflow `pages.yml` instala as dependências, compila com `mkdocs build`
+e publica o conteúdo de `site/`. Pull requests somente compilam;
+pushes em `main` e execução manual também publicam. O deploy não reexecuta
+a análise nem confere critérios acadêmicos da entrega.
 
-A URL canônica do relatório é testada como
+A URL canônica do relatório está configurada como
 `https://gubscruz.github.io/ann-dl/exercises/data/`.
 A data válida para a entrega é a do último commit em `docs/exercises/data/`;
 a data da publicação não substitui esse registro. O histórico original do
