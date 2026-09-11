@@ -1,5 +1,5 @@
 ---
-title: Início
+title: Home
 hide:
   - toc
 ---
@@ -8,15 +8,18 @@ hide:
 
 <div class="portfolio-intro" markdown>
 
-**gubscruz · Portfólio da disciplina**
-
-Sou gubscruz. Este repositório reúne meus exercícios e projetos do semestre,
-com os relatórios, o código utilizado e as figuras de cada atividade.
-
-[Ler o exercício Data](exercises/data/index.md){ .md-button .md-button--primary }
-[Ver o repositório](https://github.com/gubscruz/ann-dl){ .md-button }
+depois vou melhorar isso aqui
 
 </div>
+
+
+## Entregas
+
+- [x] Roteiro 1 - Data 10/09/2026
+- [ ] Roteiro 2
+- [ ] Roteiro 3
+- [ ] Roteiro 4
+- [ ] Projeto
 
 ## Exercícios
 
@@ -27,15 +30,3 @@ com os relatórios, o código utilizado e as figuras de cada atividade.
 | [MLP](exercises/mlp/index.md) | Redes multicamadas | A desenvolver |
 | [VAE](exercises/vae/index.md) | Autoencoders variacionais | A desenvolver |
 
-## Projetos
-
-Os trabalhos maiores da disciplina serão organizados na seção [Projetos](projects/index.md).
-
-## Como ler este portfólio
-
-Cada relatório segue os itens do enunciado e termina com uma tabela de resultados.
-O código aparece por inclusão de arquivos em `code/`, e as imagens estão
-versionadas em `figures/`. O uso de IA é declarado em cada entrega.
-
-Este site parte do [template da disciplina](https://github.com/hsandmann/documentation.template),
-com MkDocs, Material e publicação pelo GitHub Actions.
