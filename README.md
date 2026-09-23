@@ -32,11 +32,12 @@ requirements.txt
 .github/workflows/pages.yml
 ```
 
-As páginas Perceptron, MLP e VAE são espaços reservados para atividades futuras.
-O relatório Data é a entrega completa atual. Os scripts estão em `code/`;
-os blocos científicos exibidos no site vêm de `analise.py` por snippets
-nomeados. As figuras são arquivos versionados, e a última seção é o resumo
-com as 13 linhas do enunciado. O front matter e a página declaram o uso de IA.
+Os relatórios Data e [Perceptron](https://gubscruz.github.io/ann-dl/exercises/perceptron/) estão completos.
+As páginas MLP e VAE são espaços reservados para atividades futuras. Os scripts
+estão em `code/` e as figuras são arquivos versionados. No relatório Data, os
+blocos de código usam snippets de `analise.py` e o resumo tem 13 linhas; no
+Perceptron, o código está diretamente na página e o resumo tem 8 linhas.
+O front matter e as páginas declaram o uso de IA.
 
 ## Reproduzir a entrega
 
@@ -127,3 +128,24 @@ A URL canônica do relatório está configurada como
 A data válida para a entrega é a do último commit em `docs/exercises/data/`;
 a data da publicação não substitui esse registro. O histórico original do
 template foi preservado e as alterações desta entrega têm commits próprios.
+
+## Atividade 2 — Perceptron
+
+Entrega: https://gubscruz.github.io/ann-dl/exercises/perceptron/
+
+O notebook executado está em `docs/exercises/perceptron/code/perceptron.ipynb`.
+Reexecute todas as células em um kernel novo. Os cálculos usam somente NumPy e
+Matplotlib, com uma única semente 42, ordem fixa por classe e implementação própria.
+O pocket é avaliado após cada atualização no dataset completo.
+
+Para recalcular também o texto numérico, as seis figuras, o script e o notebook:
+
+```bash
+python docs/exercises/perceptron/code/gerar_relatorio.py
+mkdocs build --strict
+```
+
+O gerador é a fonte da entrega; `demonstracao_zero.md` preserva a demonstração
+algébrica do notebook original. As métricas e a tabela estão em `resultados/`.
+A geração das figuras usa o backend Agg e dispensa interface gráfica.
+A declaração de colaboração com IA está no relatório e no front matter.

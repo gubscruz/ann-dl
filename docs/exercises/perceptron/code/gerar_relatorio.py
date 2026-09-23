@@ -1,11 +1,61 @@
----
-exercise: perceptron
-ai_use: "OpenAI Codex: apoio no exercício 2, reprodutibilidade e apresentação do exercício 1, verificação e publicação."
-title: Perceptron — separabilidade e limitações
----
+"""Recalcula o relatório, notebook executado, script e figuras do Perceptron."""
+from pathlib import Path
+import base64
+import contextlib
+import io
+import json
+import textwrap
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import nbformat
 
-[Notebook executado](code/perceptron.ipynb) · [Código completo](code/analise.py) · [Gerador do relatório](code/gerar_relatorio.py) · [Métricas](resultados/metricas.json)
+ROOT = Path(__file__).resolve().parent.parent
+(ROOT / 'figures').mkdir(exist_ok=True)
+(ROOT / 'resultados').mkdir(exist_ok=True)
+cells, page, source = [], [], []
+ns = {}
+figure_number = 0
 
+def md(text):
+    text = textwrap.dedent(text).strip()
+    cells.append(nbformat.v4.new_markdown_cell(text))
+    page.append(text)
+
+def code(text):
+    global figure_number
+    text = textwrap.dedent(text).strip()
+    cell = nbformat.v4.new_code_cell(text)
+    cell.execution_count = sum(c.cell_type == 'code' for c in cells) + 1
+    output = io.StringIO()
+    with contextlib.redirect_stdout(output):
+        exec(compile(text, '<notebook>', 'exec'), ns)
+    if output.getvalue():
+        cell.outputs.append(nbformat.v4.new_output('stream', name='stdout', text=output.getvalue()))
+    page.append('```python\n' + text + '\n```')
+    if output.getvalue():
+        page.append('```text\n' + output.getvalue().strip() + '\n```')
+    for number in plt.get_fignums():
+        figure_number += 1
+        fig = plt.figure(number)
+        path = ROOT / 'figures' / f'figura_{figure_number}.png'
+        fig.savefig(path, dpi=160, bbox_inches='tight')
+        cell.outputs.append(nbformat.v4.new_output('display_data', data={
+            'image/png': base64.b64encode(path.read_bytes()).decode(),
+            'text/plain': f'Figura {figure_number}'
+        }, metadata={}))
+        page.append(f'![Figura {figure_number}](figures/figura_{figure_number}.png)')
+        plt.close(fig)
+    cells.append(cell)
+    source.append(text)
+
+def vec(v):
+    return '[' + ', '.join(f'{x:.8f}' for x in v) + ']'
+
+def pct(v):
+    return f'{100*v:.2f}%'.replace('.', ',')
+
+md(r'''
 # Perceptron: separabilidade e limitações
 
 **Atividade 2 · gubscruz · 22/09/2026**
@@ -33,24 +83,24 @@ novos sorteios. A correção da semente altera os números da versão inicial do
 na correção da reprodutibilidade e apresentação do exercício 1, na verificação
 dos resultados e na organização/publicação do relatório. A implementação original
 do exercício 1 e sua demonstração algébrica foram usadas como base.
-
-```python
+''')
+code('''
 import numpy as np
 import matplotlib.pyplot as plt
 
 # Um único gerador compartilhado por todo o relatório.
 rng = np.random.default_rng(42)
 plt.rcParams.update({'figure.figsize': (8, 6), 'font.size': 11})
-```
-
+''')
+md(r'''
 ## Exercício 1
 
 ### A — Gere os dados
 
 São 1000 amostras por classe: médias [1,5; 1,5] e [5; 5], ambas com
 covariância diagonal [0,5; 0,5]. A Figura 1 mostra os 2000 pontos.
-
-```python
+''')
+code('''
 class_0 = rng.multivariate_normal([1.5, 1.5], [[0.5, 0], [0, 0.5]], size=1000)
 class_1 = rng.multivariate_normal([5, 5], [[0.5, 0], [0, 0.5]], size=1000)
 X = np.vstack((class_0, class_1))
@@ -81,10 +131,8 @@ scatter_classes(ax, X, y)
 ax.set_title('Figura 1 — Dados separáveis (2000 amostras)')
 ax.legend()
 fig.tight_layout()
-```
-
-![Figura 1](figures/figura_1.png)
-
+''')
+md(r'''
 ### B — Implemente o perceptron
 
 A predição é $\hat y=1$ quando $w\cdot x+b\geq0$, e 0 caso contrário.
@@ -97,8 +145,8 @@ A classe é definida uma única vez e reutilizada nos dois exercícios. A opçã
 `pocket=True` apenas mede a acurácia e copia parâmetros; nunca substitui os pesos
 correntes. Inicializa-se o pocket com o estado inicial (época 0), e empates preservam
 a primeira ocorrência. Os históricos são registrados ao final de cada época.
-
-```python
+''')
+code('''
 class Perceptron:
     def __init__(self, rng, learning_rate=0.01, n_iterations=100,
                  initial_weights=None, pocket=False):
@@ -171,11 +219,9 @@ class Perceptron:
                 'num_epochs': len(self.accuracy_history),
                 'final_accuracy': self.accuracy_history[-1],
                 'accuracy_history': self.accuracy_history.copy()}
-```
-
-### C — Treine e meça
-
-```python
+''')
+md('### C — Treine e meça')
+code('''
 perceptron = Perceptron(rng, learning_rate=0.01, n_iterations=100)
 perceptron.fit(X, y)
 metrics = perceptron.metrics()
@@ -204,26 +250,15 @@ ax.set(title='Figura 3 — Acurácia por época: dados separáveis',
 ax.legend()
 ax.grid(alpha=0.2)
 fig.tight_layout()
-```
-
-```text
-Pesos iniciais: [0.00253205 0.00895218]
-Pesos finais: [0.05049707 0.02887168]
-Bias final: -0.25000000000000006
-Épocas: 26
-Acurácia final: 1.0
-Atualizações por época: [3, 3, 4, 4, 3, 4, 3, 4, 2, 4, 2, 4, 2, 3, 3, 3, 2, 3, 3, 2, 3, 3, 2, 3, 1, 0]
-```
-
-![Figura 2](figures/figura_2.png)
-
-![Figura 3](figures/figura_3.png)
-
-Com $\eta=0,01$, os pesos finais são **w = [0.05049707, 0.02887168]**, o bias é
-**b = -0.25000000**, o treino termina em **26 épocas** e a acurácia
-final é **100,00%**. A Figura 2 tem **0 pontos mal classificados**.
+''')
+p = ns['perceptron']
+md(fr'''
+Com $\eta=0,01$, os pesos finais são **w = {vec(p.weights)}**, o bias é
+**b = {p.bias:.8f}**, o treino termina em **{len(p.accuracy_history)} épocas** e a acurácia
+final é **{pct(p.accuracy_history[-1])}**. A Figura 2 tem **0 pontos mal classificados**.
 A época final confirma que nenhuma atualização é necessária.
-
+''')
+md(r'''
 ### D — Análise
 
 #### Convergência e atualizações
@@ -233,8 +268,8 @@ Uma amostra correta tem $e=0$ e não move os parâmetros; os enganos são corrig
 pela regra dirigida pelo erro. A separação grande favorece encontrar uma solução
 com poucas passagens. A contagem de atualizações acaba chegando a zero, mas
 nem ela nem a acurácia precisam variar monotonamente durante o caminho.
-
-```python
+''')
+code('''
 # Mesmos dados, ordem, bias e pesos iniciais: muda apenas a taxa.
 perceptron_eta_1 = Perceptron(rng, learning_rate=1.0, n_iterations=100,
                             initial_weights=perceptron.initial_weights)
@@ -245,290 +280,26 @@ print('eta=0.01:', perceptron.metrics())
 print('eta=1.0:', perceptron_eta_1.metrics())
 print('Direção eta=0.01:', direction_eta_001)
 print('Direção eta=1.0:', direction_eta_1)
-```
-
-```text
-eta=0.01: {'weights': array([0.05049707, 0.02887168]), 'bias': np.float64(-0.25000000000000006), 'num_epochs': 26, 'final_accuracy': 1.0, 'accuracy_history': [0.503, 0.505, 0.515, 0.537, 0.5295, 0.5845, 0.578, 0.8555, 0.6005, 0.8595, 0.6515, 0.943, 0.6695, 0.706, 0.8165, 0.9305, 0.741, 0.8465, 0.945, 0.771, 0.866, 0.952, 0.837, 0.9245, 1.0, 1.0]}
-eta=1.0: {'weights': array([5.87061596, 3.3592393 ]), 'bias': np.float64(-31.0), 'num_epochs': 37, 'final_accuracy': 1.0, 'accuracy_history': [0.5, 0.512, 0.514, 0.5155, 0.628, 0.671, 0.5285, 0.7025, 0.561, 0.834, 0.585, 0.8405, 0.633, 0.9325, 0.6525, 0.928, 0.709, 0.706, 0.756, 0.859, 0.955, 0.781, 0.882, 0.965, 0.805, 0.9, 0.963, 0.8495, 0.9335, 0.9805, 0.8635, 0.942, 0.9835, 0.9175, 0.966, 1.0, 1.0]}
-Direção eta=0.01: [0.86812305 0.49634905]
-Direção eta=1.0: [0.86794992 0.49665172]
-```
-
+''')
+p1 = ns['perceptron_eta_1']
+md(fr'''
 #### Comparação das taxas
 
-Com $\eta=0,01$, foram **26 épocas**, acurácia **100,00%**
-e direção $w/\|w\|$ **[0.86812305, 0.49634905]**. Com $\eta=1,0$, foram
-**37 épocas**, acurácia **100,00%** e direção
-**[0.86794992, 0.49665172]**, com **w = [5.87061596, 3.35923930]** e **b = -31.00000000**.
-Os pesos iniciais compartilhados foram **[0.00253205, 0.00895218]**.
+Com $\eta=0,01$, foram **{len(p.accuracy_history)} épocas**, acurácia **{pct(p.accuracy_history[-1])}**
+e direção $w/\|w\|$ **{vec(ns['direction_eta_001'])}**. Com $\eta=1,0$, foram
+**{len(p1.accuracy_history)} épocas**, acurácia **{pct(p1.accuracy_history[-1])}** e direção
+**{vec(ns['direction_eta_1'])}**, com **w = {vec(p1.weights)}** e **b = {p1.bias:.8f}**.
+Os pesos iniciais compartilhados foram **{vec(p.initial_weights)}**.
 
 As duas execuções chegam a 100%, por fronteiras diferentes. A taxa controla o
 tamanho de cada passo: $\|\Delta w\|=\eta\|x\|$ e $|\Delta b|=\eta$ em um erro.
 Com pesos iniciais da ordem de 0,01, a taxa 1,0 dá saltos muito maiores que a
 inicialização, mudando sua influência relativa e o caminho das correções.
 Essa comparação não estabelece que uma taxa maior sempre converge mais rápido.
-As atualizações na execução com taxa 0,01 foram **[3, 3, 4, 4, 3, 4, 3, 4, 2, 4, 2, 4, 2, 3, 3, 3, 2, 3, 3, 2, 3, 3, 2, 3, 1, 0]**.
-
-#### Inicialização em zero e invariância à taxa
-
-Considere duas execuções do Perceptron, ambas iniciadas com
-
-$$
-\mathbf{w}_0 = 0
-\qquad\text{e}\qquad
-b_0 = 0,
-$$
-
-mas com taxas de aprendizado diferentes, $\eta_1$ e $\eta_2$.
-
-Defina
-
-$$
-c = \frac{\eta_2}{\eta_1}.
-$$
-
-Queremos mostrar que, ao longo de todo o treinamento,
-
-$$
-\mathbf{w}^{(2)} = c\,\mathbf{w}^{(1)}
-$$
-
-e
-
-$$
-b^{(2)} = c\,b^{(1)}.
-$$
-
-No início, isso é verdadeiro, pois
-
-$$
-\mathbf{w}^{(1)}_0 = \mathbf{w}^{(2)}_0 = 0
-$$
-
-e
-
-$$
-b^{(1)}_0 = b^{(2)}_0 = 0.
-$$
-
-Agora suponha que, antes de uma atualização, valha
-
-$$
-\mathbf{w}^{(2)} = c\,\mathbf{w}^{(1)}
-$$
-
-e
-
-$$
-b^{(2)} = c\,b^{(1)}.
-$$
-
-Para a primeira execução, a ativação é
-
-$$
-z_1 = \mathbf{w}^{(1)}\cdot\mathbf{x} + b^{(1)}.
-$$
-
-Para a segunda execução,
-
-$$
-z_2 = \mathbf{w}^{(2)}\cdot\mathbf{x} + b^{(2)}.
-$$
-
-Substituindo as relações anteriores,
-
-$$
-z_2
-=
-c\,\mathbf{w}^{(1)}\cdot\mathbf{x}
-+
-c\,b^{(1)}.
-$$
-
-Logo,
-
-$$
-z_2
-=
-c\left(
-\mathbf{w}^{(1)}\cdot\mathbf{x}
-+
-b^{(1)}
-\right),
-$$
-
-portanto,
-
-$$
-z_2 = c\,z_1.
-$$
-
-Como
-
-$$
-c = \frac{\eta_2}{\eta_1} > 0,
-$$
-
-multiplicar a ativação por $c$ não altera seu sinal. Assim,
-
-$$
-z_1 \ge 0
-\iff
-z_2 \ge 0.
-$$
-
-Portanto, as duas execuções fazem sempre a mesma predição:
-
-$$
-\hat{y}_1 = \hat{y}_2.
-$$
-
-Consequentemente, o erro
-
-$$
-e = y - \hat{y}
-$$
-
-também é o mesmo nas duas execuções.
-
-A regra de atualização da primeira execução é
-
-$$
-\mathbf{w}^{(1)}_{\text{novo}}
-=
-\mathbf{w}^{(1)}
-+
-\eta_1 e\mathbf{x}.
-$$
-
-Para a segunda execução,
-
-$$
-\mathbf{w}^{(2)}_{\text{novo}}
-=
-\mathbf{w}^{(2)}
-+
-\eta_2 e\mathbf{x}.
-$$
-
-Como
-
-$$
-\mathbf{w}^{(2)} = c\,\mathbf{w}^{(1)}
-$$
-
-e
-
-$$
-\eta_2 = c\,\eta_1,
-$$
-
-temos
-
-$$
-\mathbf{w}^{(2)}_{\text{novo}}
-=
-c\,\mathbf{w}^{(1)}
-+
-c\,\eta_1 e\mathbf{x}.
-$$
-
-Colocando $c$ em evidência,
-
-$$
-\mathbf{w}^{(2)}_{\text{novo}}
-=
-c\left(
-\mathbf{w}^{(1)}
-+
-\eta_1 e\mathbf{x}
-\right).
-$$
-
-Assim,
-
-$$
-\boxed{
-\mathbf{w}^{(2)}_{\text{novo}}
-=
-c\,\mathbf{w}^{(1)}_{\text{novo}}
-}
-$$
-
-e, de forma análoga para o bias,
-
-$$
-\boxed{
-b^{(2)}_{\text{novo}}
-=
-c\,b^{(1)}_{\text{novo}}
-}.
-$$
-
-Portanto, essa relação permanece válida durante todo o treinamento. Ao final,
-
-$$
-\boxed{
-\mathbf{w}_{\eta_2}
-=
-\frac{\eta_2}{\eta_1}\mathbf{w}_{\eta_1}
-}
-$$
-
-e
-
-$$
-\boxed{
-b_{\eta_2}
-=
-\frac{\eta_2}{\eta_1}b_{\eta_1}
-}.
-$$
-
-A fronteira de decisão é dada por
-
-$$
-\mathbf{w}\cdot\mathbf{x} + b = 0.
-$$
-
-Multiplicar todos os parâmetros por uma constante positiva $c$ produz
-
-$$
-c\,\mathbf{w}\cdot\mathbf{x} + c\,b = 0,
-$$
-
-ou seja,
-
-$$
-c\left(
-\mathbf{w}\cdot\mathbf{x} + b
-\right)=0.
-$$
-
-Como $c \neq 0$,
-
-$$
-c\left(
-\mathbf{w}\cdot\mathbf{x} + b
-\right)=0
-\iff
-\mathbf{w}\cdot\mathbf{x} + b=0.
-$$
-
-Logo, as duas execuções produzem exatamente a mesma fronteira de decisão.
-
-Além disso, como fazem as mesmas previsões em cada etapa, elas cometem erros nas mesmas amostras, realizam atualizações nos mesmos pontos e convergem no mesmo número de épocas.
-
-Assim, se o treinamento começasse com
-
-$$
-\mathbf{w}=0,
-\qquad
-b=0,
-$$
-
-a taxa de aprendizado $\eta$ apenas reescalaria os valores de $\mathbf{w}$ e $b$, sem alterar a fronteira de decisão nem a sequência de previsões. É por isso que o exercício utiliza pesos iniciais aleatórios diferentes de zero.
-
+As atualizações na execução com taxa 0,01 foram **{p.updates_history}**.
+''')
+md((ROOT / 'code/demonstracao_zero.md').read_text())
+md(r'''
 ## Exercício 2
 
 ### A — Gere os dados
@@ -537,8 +308,8 @@ São 1000 amostras por classe, médias [3; 3] e [4; 4], com covariância
 $\begin{bmatrix}1,5&0\\0&1,5\end{bmatrix}$ em ambas. A variância é três vezes
 a do exercício 1; o desvio padrão aumenta por um fator $\sqrt{3}$.
 O mesmo `rng` continua de onde parou. Mantém-se a ordem das classes do exercício 1.
-
-```python
+''')
+code('''
 class_0_overlap = rng.multivariate_normal([3, 3], [[1.5, 0], [0, 1.5]], size=1000)
 class_1_overlap = rng.multivariate_normal([4, 4], [[1.5, 0], [0, 1.5]], size=1000)
 X2 = np.vstack((class_0_overlap, class_1_overlap))
@@ -548,18 +319,16 @@ scatter_classes(ax, X2, y2)
 ax.set_title('Figura 4 — Dados sobrepostos (2000 amostras)')
 ax.legend()
 fig.tight_layout()
-```
-
-![Figura 4](figures/figura_4.png)
-
+''')
+md(r'''
 ### B — Treine guardando os melhores pesos
 
 Reutiliza-se a classe `Perceptron` definida no exercício 1, com $\eta=0,01$ e
 100 épocas. A opção pocket guarda uma cópia independente de $w$ e $b$ quando
 surge uma acurácia estritamente maior no conjunto completo. O treino continua
 a partir dos pesos correntes, preservando a regra de atualização original.
-
-```python
+''')
+code('''
 perceptron_overlap = Perceptron(rng, learning_rate=0.01, n_iterations=100, pocket=True)
 perceptron_overlap.fit(X2, y2)
 final_predictions = perceptron_overlap.predict_all(X2)
@@ -574,29 +343,20 @@ print('Melhor pocket — época:', perceptron_overlap.pocket_epoch,
       'amostra:', perceptron_overlap.pocket_sample)
 print('Avaliações após atualizações:', perceptron_overlap.pocket_evaluations)
 print('Última época — atualizações:', perceptron_overlap.updates_history[-1])
-```
-
-```text
-Épocas: 100
-Final — w: [0.05448404 0.0480433 ] b: -0.07 acurácia: 0.5015
-Pocket — w: [0.01066397 0.00872652] b: -0.07 acurácia: 0.711
-Melhor pocket — época: 86 amostra: 1
-Avaliações após atualizações: 289
-Última época — atualizações: 2
-```
-
-Após **100 épocas**, os pesos **finais** são **w = [0.05448404, 0.04804330]**,
-**b = -0.07000000**, com acurácia **50,15%**.
-Os pesos do **pocket** são **w = [0.01066397, 0.00872652]**,
-**b = -0.07000000**, com acurácia **71,10%**.
-O melhor pocket ocorreu pela primeira vez na **época 86**,
-após processar a **amostra 1** dessa época (índices iniciados em 1).
-Foram feitas **289 avaliações** após atualizações, sempre sobre
-os 2000 pontos. Mesmo a última época ainda teve **2 atualizações**.
-
-### C — Figuras
-
-```python
+''')
+p2 = ns['perceptron_overlap']
+md(fr'''
+Após **100 épocas**, os pesos **finais** são **w = {vec(p2.weights)}**,
+**b = {p2.bias:.8f}**, com acurácia **{pct(p2.accuracy_history[-1])}**.
+Os pesos do **pocket** são **w = {vec(p2.pocket_weights)}**,
+**b = {p2.pocket_bias:.8f}**, com acurácia **{pct(p2.pocket_accuracy)}**.
+O melhor pocket ocorreu pela primeira vez na **época {p2.pocket_epoch}**,
+após processar a **amostra {p2.pocket_sample}** dessa época (índices iniciados em 1).
+Foram feitas **{p2.pocket_evaluations} avaliações** após atualizações, sempre sobre
+os 2000 pontos. Mesmo a última época ainda teve **{p2.updates_history[-1]} atualizações**.
+''')
+md('### C — Figuras')
+code('''
 # Os dois painéis mostram as mesmas duas retas; separam somente as marcas de erro.
 fig, axes = plt.subplots(1, 2, figsize=(14, 6), sharex=True, sharey=True)
 for ax, predictions, name in zip(axes, [final_predictions, pocket_predictions],
@@ -625,18 +385,14 @@ ax.set(title='Figura 6 — Acurácia por época: dados sobrepostos',
 ax.legend()
 ax.grid(alpha=0.2)
 fig.tight_layout()
-```
-
-![Figura 5](figures/figura_5.png)
-
-![Figura 6](figures/figura_6.png)
-
+''')
+md(r'''
 A Figura 5 usa dois painéis para distinguir os erros de cada conjunto de pesos;
 as duas fronteiras aparecem em ambos, na mesma escala. A Figura 6 registra os
 pesos correntes **ao final** de cada época e o melhor pocket encontrado **em qualquer
 atualização** até aquele momento. Por isso, a curva pocket nunca diminui.
-
-```python
+''')
+code('''
 # Diagnósticos para interpretar a fronteira e o efeito da ordem das amostras.
 for name, prediction in [('Final', final_predictions), ('Pocket', pocket_predictions)]:
     matrix = np.array([[np.sum((y2 == real) & (prediction == predicted))
@@ -649,35 +405,27 @@ print('Escores finais nos centros:', centers @ perceptron_overlap.weights + perc
 print('Escores pocket nos centros:', centers @ perceptron_overlap.pocket_weights + perceptron_overlap.pocket_bias)
 print('Interseção final com x1=x2:', -perceptron_overlap.bias / perceptron_overlap.weights.sum())
 print('Interseção pocket com x1=x2:', -perceptron_overlap.pocket_bias / perceptron_overlap.pocket_weights.sum())
-```
-
-```text
-Final — matriz (linhas reais, colunas preditas): [[3, 997], [0, 1000]]
-Pocket — matriz (linhas reais, colunas preditas): [[755, 245], [333, 667]]
-Norma média de x: 5.110833870217266
-Escores finais nos centros: [0.23758201 0.34010935]
-Escores pocket nos centros: [-0.01182852  0.00756198]
-Interseção final com x1=x2: 0.6827447412279054
-Interseção pocket com x1=x2: 3.6100161461022897
-```
-
+''')
+np = ns['np']
+fp, pp, y2 = ns['final_predictions'], ns['pocket_predictions'], ns['y2']
+md(fr'''
 ### D — Análise
 
 #### Por que o pocket é melhor que o estado final?
 
-O pocket obteve **71,10%**, próximo dos 73% indicados no enunciado,
-enquanto o estado final obteve **50,15%**. O pocket preserva o
+O pocket obteve **{pct(p2.pocket_accuracy)}**, próximo dos 73% indicados no enunciado,
+enquanto o estado final obteve **{pct(p2.accuracy_history[-1])}**. O pocket preserva o
 melhor estado visitado; a última atualização não é obrigada a melhorar a acurácia
 global, pois corrige apenas a amostra corrente. Não há garantia de que o pocket
 encontre a melhor reta possível: ele seleciona a melhor entre as visitadas.
 
-A fronteira final corta a diagonal $x_1=x_2$ em **0.6827**,
-enquanto a do pocket corta em **3.6100**, entre
+A fronteira final corta a diagonal $x_1=x_2$ em **{(-p2.bias/p2.weights.sum()):.4f}**,
+enquanto a do pocket corta em **{(-p2.pocket_bias/p2.pocket_weights.sum()):.4f}**, entre
 os centros 3 e 4. A reta final fica deslocada para a borda inferior/esquerda da
 nuvem, deixando quase todos os pontos no lado da classe 1: prevê classe 1 para
-**1997 de 2000 pontos**. Acerta **3 de 1000**
-da classe 0 e **1000 de 1000** da classe 1. O pocket acerta
-**755 de 1000** da classe 0 e **667 de 1000**
+**{int((fp==1).sum())} de 2000 pontos**. Acerta **{int(((fp==0)&(y2==0)).sum())} de 1000**
+da classe 0 e **{int(((fp==1)&(y2==1)).sum())} de 1000** da classe 1. O pocket acerta
+**{int(((pp==0)&(y2==0)).sum())} de 1000** da classe 0 e **{int(((pp==1)&(y2==1)).sum())} de 1000**
 da classe 1. Isso explica a acurácia final próxima de um chute balanceado.
 
 A ordem importa: cada época termina com as 1000 amostras da classe 1. Nos erros
@@ -686,8 +434,8 @@ coordenadas são predominantemente positivas, as correções finais favorecem pr
 em grande parte da nuvem, desfazendo correções da classe 0 feitas no começo da época.
 
 Por erro, $|\Delta b|=0,01$, mas $\|\Delta w\|=0,01\|x\|$. A norma média observada
-é **5.1108**, isto é, um passo nos pesos tem norma típica de
-**0.0511**, cerca de cinco vezes o passo no bias.
+é **{ns['mean_norm']:.4f}**, isto é, um passo nos pesos tem norma típica de
+**{0.01*ns['mean_norm']:.4f}**, cerca de cinco vezes o passo no bias.
 No escore de outro ponto $x'$, a mudança é $\Delta z(x')=0,01e(x\cdot x'+1)$;
 no próprio ponto, é $0,01e(\|x\|^2+1)$, aproximadamente 0,26 quando $\|x\|\approx5$.
 Assim, uma correção local desloca a classificação de muitos pontos. O bias não
@@ -698,7 +446,7 @@ correções por classe acabam dominando o estado medido ao fim da época.
 
 Na Figura 3, o treino atinge 100% e termina quando uma passagem completa não muda
 nenhum parâmetro. Na Figura 6, o pocket estabiliza por guardar o máximo histórico,
-mas os pesos correntes continuam sofrendo correções: houve **2**
+mas os pesos correntes continuam sofrendo correções: houve **{p2.updates_history[-1]}**
 na última época. Uma curva de acurácia quase plana perto de 50% não significa
 convergência dos parâmetros; o registro ao fim da época esconde mudanças internas.
 
@@ -721,16 +469,57 @@ mas mantém a razão $\|\Delta w\|/|\Delta b|=\|x\|$ e a família de fronteiras 
 Isso pode mudar o caminho, as oscilações e a acurácia obtida em 100 épocas,
 principalmente porque a inicialização não é zero; não elimina a sobreposição
 nem garante 100% ou uma época sem atualizações. Com $\eta=0$ não há aprendizado.
+''')
+rows = [
+('Exercício 1 — w e b finais', f'w = {vec(p.weights)}; b = {p.bias:.8f}'),
+('Exercício 1 — épocas até convergir', str(len(p.accuracy_history))),
+('Exercício 1 — acurácia final', pct(p.accuracy_history[-1])),
+('Exercício 1 — épocas e acurácia final com η=1.0', f'{len(p1.accuracy_history)} épocas; {pct(p1.accuracy_history[-1])}'),
+('Exercício 2 — w e b finais', f'w = {vec(p2.weights)}; b = {p2.bias:.8f}'),
+('Exercício 2 — acurácia dos pesos finais', pct(p2.accuracy_history[-1])),
+('Exercício 2 — acurácia dos pesos do pocket', pct(p2.pocket_accuracy)),
+('Exercício 2 — época em que o melhor do pocket ocorreu', str(p2.pocket_epoch))]
+md('## Resumo dos resultados\n\n| # | Quantidade | Valor |\n| --- | --- | --- |\n' +
+   '\n'.join(f'| {i} | {name} | {value} |' for i, (name, value) in enumerate(rows, 1)))
 
-## Resumo dos resultados
+notebook = nbformat.v4.new_notebook(cells=cells, metadata={
+    'kernelspec': {'display_name': 'Python 3', 'language': 'python', 'name': 'python3'},
+    'language_info': {'name': 'python', 'version': '3.13.4'}})
+nbformat.validate(notebook)
+nbformat.write(notebook, ROOT / 'code/perceptron.ipynb')
+(ROOT / 'code/analise.py').write_text('# Gerado por gerar_relatorio.py.\n' + '\n\n'.join(source) + '\nplt.show()\n')
+front = '''---
+exercise: perceptron
+ai_use: "OpenAI Codex: apoio no exercício 2, reprodutibilidade e apresentação do exercício 1, verificação e publicação."
+title: Perceptron — separabilidade e limitações
+---
 
-| # | Quantidade | Valor |
-| --- | --- | --- |
-| 1 | Exercício 1 — w e b finais | w = [0.05049707, 0.02887168]; b = -0.25000000 |
-| 2 | Exercício 1 — épocas até convergir | 26 |
-| 3 | Exercício 1 — acurácia final | 100,00% |
-| 4 | Exercício 1 — épocas e acurácia final com η=1.0 | 37 épocas; 100,00% |
-| 5 | Exercício 2 — w e b finais | w = [0.05448404, 0.04804330]; b = -0.07000000 |
-| 6 | Exercício 2 — acurácia dos pesos finais | 50,15% |
-| 7 | Exercício 2 — acurácia dos pesos do pocket | 71,10% |
-| 8 | Exercício 2 — época em que o melhor do pocket ocorreu | 86 |
+'''
+links = ('[Notebook executado](code/perceptron.ipynb) · [Código completo](code/analise.py) · '
+         '[Gerador do relatório](code/gerar_relatorio.py) · [Métricas](resultados/metricas.json)\n\n')
+(ROOT / 'index.md').write_text(front + links + '\n\n'.join(page) + '\n')
+
+def serial(model):
+    result = model.metrics()
+    result['weights'] = result['weights'].tolist()
+    result['initial_weights'] = model.initial_weights.tolist()
+    result['updates_history'] = model.updates_history
+    return result
+
+results = {'seed': 42, 'exercicio_1': serial(p), 'exercicio_1_eta_1': serial(p1),
+           'exercicio_2': serial(p2), 'pocket': {
+               'weights': p2.pocket_weights.tolist(), 'bias': p2.pocket_bias,
+               'accuracy': p2.pocket_accuracy, 'epoch': p2.pocket_epoch,
+               'sample': p2.pocket_sample, 'evaluations': p2.pocket_evaluations,
+               'accuracy_history': p2.pocket_history}}
+(ROOT / 'resultados/metricas.json').write_text(json.dumps(results, indent=2) + '\n')
+import csv
+with (ROOT / 'resultados/resumo_resultados.csv').open('w') as file:
+    writer = csv.writer(file)
+    writer.writerow(['#', 'Quantidade', 'Valor'])
+    writer.writerows((i, *row) for i, row in enumerate(rows, 1))
+print(json.dumps({key: value for key, value in results.items() if key == 'seed'}))
+print('Exercício 1:', p.metrics())
+print('Exercício 2:', p2.weights, p2.bias, p2.accuracy_history[-1])
+print('Pocket:', p2.pocket_weights, p2.pocket_bias, p2.pocket_accuracy, p2.pocket_epoch)
+print(f'Relatório gerado com {figure_number} figuras.')
