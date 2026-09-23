@@ -1,51 +1,24 @@
 ---
 exercise: perceptron
-ai_use: "OpenAI Codex: apoio no exercício 2, reprodutibilidade e apresentação do exercício 1, verificação e publicação."
-title: Perceptron — separabilidade e limitações
+ai_use: "AI para poio no exercício 2, e escrita do markdown para a demonstração na questao 1C (item 3)"
+title: Perceptron - separabilidade e limitações
 ---
-
-[Notebook executado](code/perceptron.ipynb) · [Código completo](code/analise.py) · [Gerador do relatório](code/gerar_relatorio.py) · [Métricas](resultados/metricas.json)
 
 # Perceptron: separabilidade e limitações
 
-**Atividade 2 · gubscruz · 22/09/2026**
-
-Este relatório compara a mesma implementação de perceptron em duas amostras:
-uma separável e outra com sobreposição. O exercício 1 parte da implementação
-original do aluno; o exercício 2 acrescenta o acompanhamento pocket, que guarda
-uma cópia dos melhores parâmetros sem interferir nas atualizações do modelo.
-
-**Abordagem e desafios.** O modelo usa rótulos 0/1, ativação degrau, atualização
-somente em erros e ordem fixa: primeiro as 1000 amostras da classe 0, depois as
-1000 da classe 1, em todas as épocas. Os desafios são tornar a geração reproduzível,
-comparar as taxas a partir dos mesmos pesos e avaliar o pocket após **cada atualização**,
-não apenas ao final da época. A avaliação do dataset inteiro é vetorizada com NumPy;
-a regra e o laço do perceptron são escritos explicitamente, sem modelo de biblioteca.
-Todas as acurácias são de **treinamento**, sem estimativa de generalização.
-
-**Reprodutibilidade.** Execute todas as células na ordem, em um kernel novo.
-Há um único `rng = np.random.default_rng(42)`: sorteiam-se os dados do exercício 1,
-os pesos iniciais desse exercício, os dados do exercício 2 e seus pesos iniciais.
-A comparação de taxas reutiliza uma cópia dos mesmos pesos iniciais e não consome
-novos sorteios. A correção da semente altera os números da versão inicial do exercício 1.
-
-**Uso de IA.** OpenAI Codex auxiliou na implementação e análise do exercício 2,
-na correção da reprodutibilidade e apresentação do exercício 1, na verificação
-dos resultados e na organização/publicação do relatório. A implementação original
-do exercício 1 e sua demonstração algébrica foram usadas como base.
+**Atividade 2 - 22/09/2026**
 
 ```python
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Um único gerador compartilhado por todo o relatório.
 rng = np.random.default_rng(42)
 plt.rcParams.update({'figure.figsize': (8, 6), 'font.size': 11})
 ```
 
 ## Exercício 1
 
-### A — Gere os dados
+### A - Gere os dados
 
 São 1000 amostras por classe: médias [1,5; 1,5] e [5; 5], ambas com
 covariância diagonal [0,5; 0,5]. A Figura 1 mostra os 2000 pontos.
@@ -53,10 +26,10 @@ covariância diagonal [0,5; 0,5]. A Figura 1 mostra os 2000 pontos.
 ```python
 class_0 = rng.multivariate_normal([1.5, 1.5], [[0.5, 0], [0, 0.5]], size=1000)
 class_1 = rng.multivariate_normal([5, 5], [[0.5, 0], [0, 0.5]], size=1000)
+
 X = np.vstack((class_0, class_1))
 y = np.concatenate((np.zeros(1000, dtype=int), np.ones(1000, dtype=int)))
 
-# Auxiliares de apresentação reutilizados nas figuras dos dois exercícios.
 def scatter_classes(ax, data, labels):
     for label, color in [(0, 'tab:blue'), (1, 'tab:orange')]:
         mask = labels == label
@@ -66,7 +39,6 @@ def scatter_classes(ax, data, labels):
     ax.grid(alpha=0.2)
 
 def boundary(ax, weights, bias, label, color, style='-'):
-    # Desenha a reta sem ampliar os limites para valores fora da nuvem.
     xlim, ylim = ax.get_xlim(), ax.get_ylim()
     if not np.isclose(weights[1], 0):
         xx = np.array(xlim)
@@ -78,25 +50,19 @@ def boundary(ax, weights, bias, label, color, style='-'):
 
 fig, ax = plt.subplots()
 scatter_classes(ax, X, y)
-ax.set_title('Figura 1 — Dados separáveis (2000 amostras)')
+ax.set_title('Figura 1 - Dados separáveis (2000 amostras)')
 ax.legend()
 fig.tight_layout()
 ```
 
 ![Figura 1](figures/figura_1.png)
 
-### B — Implemente o perceptron
+### B - Implemente o perceptron
 
 A predição é $\hat y=1$ quando $w\cdot x+b\geq0$, e 0 caso contrário.
 Para cada erro $e=y-\hat y$, aplicam-se $w\leftarrow w+\eta e x$ e
 $b\leftarrow b+\eta e$. O critério de parada é uma época sem atualizações,
-ou o limite de 100 épocas. O método `fit` abaixo pertence à nossa classe;
-não é importado de nenhuma biblioteca de aprendizado.
-
-A classe é definida uma única vez e reutilizada nos dois exercícios. A opção
-`pocket=True` apenas mede a acurácia e copia parâmetros; nunca substitui os pesos
-correntes. Inicializa-se o pocket com o estado inicial (época 0), e empates preservam
-a primeira ocorrência. Os históricos são registrados ao final de cada época.
+ou o limite de 100 épocas.
 
 ```python
 class Perceptron:
@@ -104,9 +70,7 @@ class Perceptron:
                  initial_weights=None, pocket=False):
         self.learning_rate = learning_rate
         self.n_iterations = n_iterations
-        # O gerador é recebido, nunca reiniciado dentro da classe.
-        self.weights = (rng.normal(0, 0.01, size=2) if initial_weights is None
-                        else np.array(initial_weights, dtype=float).copy())
+        self.weights = np.array(initial_weights, dtype=float).copy()
         self.initial_weights = self.weights.copy()
         self.bias = 0.0
         self.use_pocket = pocket
@@ -132,7 +96,7 @@ class Perceptron:
                 self.weights += self.learning_rate * error * X[i]
                 self.bias += self.learning_rate * error
                 updates += 1
-                # Único acréscimo ao treino: avaliar e copiar após CADA atualização.
+
                 if self.use_pocket:
                     accuracy = self.accuracy(X, y)
                     self.pocket_evaluations += 1
@@ -173,7 +137,7 @@ class Perceptron:
                 'accuracy_history': self.accuracy_history.copy()}
 ```
 
-### C — Treine e meça
+### C - Treine e meça
 
 ```python
 perceptron = Perceptron(rng, learning_rate=0.01, n_iterations=100)
@@ -192,14 +156,14 @@ wrong = perceptron.predict_all(X) != y
 ax.scatter(X[wrong, 0], X[wrong, 1], facecolors='none', edgecolors='black',
            s=65, label=f'Mal classificados ({wrong.sum()})')
 boundary(ax, perceptron.weights, perceptron.bias, 'Fronteira final', 'black')
-ax.set_title('Figura 2 — Fronteira nos dados separáveis')
+ax.set_title('Figura 2 - Fronteira nos dados separáveis')
 ax.legend()
 fig.tight_layout()
 
 fig, ax = plt.subplots()
 epochs = np.arange(1, len(perceptron.accuracy_history) + 1)
 ax.plot(epochs, perceptron.accuracy_history, marker='o', label='Acurácia (classes 0 e 1)')
-ax.set(title='Figura 3 — Acurácia por época: dados separáveis',
+ax.set(title='Figura 3 - Acurácia por época: dados separáveis',
        xlabel='Época', ylabel='Acurácia', ylim=(0, 1.05))
 ax.legend()
 ax.grid(alpha=0.2)
@@ -224,7 +188,7 @@ Com $\eta=0,01$, os pesos finais são **w = [0.05049707, 0.02887168]**, o bias �
 final é **100,00%**. A Figura 2 tem **0 pontos mal classificados**.
 A época final confirma que nenhuma atualização é necessária.
 
-### D — Análise
+### D - Análise
 
 #### Convergência e atualizações
 
@@ -531,7 +495,7 @@ a taxa de aprendizado $\eta$ apenas reescalaria os valores de $\mathbf{w}$ e $b$
 
 ## Exercício 2
 
-### A — Gere os dados
+### A - Gere os dados
 
 São 1000 amostras por classe, médias [3; 3] e [4; 4], com covariância
 $\begin{bmatrix}1,5&0\\0&1,5\end{bmatrix}$ em ambas. A variância é três vezes
@@ -545,14 +509,14 @@ X2 = np.vstack((class_0_overlap, class_1_overlap))
 y2 = np.concatenate((np.zeros(1000, dtype=int), np.ones(1000, dtype=int)))
 fig, ax = plt.subplots()
 scatter_classes(ax, X2, y2)
-ax.set_title('Figura 4 — Dados sobrepostos (2000 amostras)')
+ax.set_title('Figura 4 - Dados sobrepostos (2000 amostras)')
 ax.legend()
 fig.tight_layout()
 ```
 
 ![Figura 4](figures/figura_4.png)
 
-### B — Treine guardando os melhores pesos
+### B - Treine guardando os melhores pesos
 
 Reutiliza-se a classe `Perceptron` definida no exercício 1, com $\eta=0,01$ e
 100 épocas. A opção pocket guarda uma cópia independente de $w$ e $b$ quando
@@ -566,23 +530,23 @@ final_predictions = perceptron_overlap.predict_all(X2)
 pocket_predictions = (X2 @ perceptron_overlap.pocket_weights +
                       perceptron_overlap.pocket_bias >= 0).astype(int)
 print('Épocas:', len(perceptron_overlap.accuracy_history))
-print('Final — w:', perceptron_overlap.weights, 'b:', perceptron_overlap.bias,
+print('Final - w:', perceptron_overlap.weights, 'b:', perceptron_overlap.bias,
       'acurácia:', perceptron_overlap.accuracy(X2, y2))
-print('Pocket — w:', perceptron_overlap.pocket_weights, 'b:', perceptron_overlap.pocket_bias,
+print('Pocket - w:', perceptron_overlap.pocket_weights, 'b:', perceptron_overlap.pocket_bias,
       'acurácia:', perceptron_overlap.pocket_accuracy)
-print('Melhor pocket — época:', perceptron_overlap.pocket_epoch,
+print('Melhor pocket - época:', perceptron_overlap.pocket_epoch,
       'amostra:', perceptron_overlap.pocket_sample)
 print('Avaliações após atualizações:', perceptron_overlap.pocket_evaluations)
-print('Última época — atualizações:', perceptron_overlap.updates_history[-1])
+print('Última época - atualizações:', perceptron_overlap.updates_history[-1])
 ```
 
 ```text
 Épocas: 100
-Final — w: [0.05448404 0.0480433 ] b: -0.07 acurácia: 0.5015
-Pocket — w: [0.01066397 0.00872652] b: -0.07 acurácia: 0.711
-Melhor pocket — época: 86 amostra: 1
+Final - w: [0.05448404 0.0480433 ] b: -0.07 acurácia: 0.5015
+Pocket - w: [0.01066397 0.00872652] b: -0.07 acurácia: 0.711
+Melhor pocket - época: 86 amostra: 1
 Avaliações após atualizações: 289
-Última época — atualizações: 2
+Última época - atualizações: 2
 ```
 
 Após **100 épocas**, os pesos **finais** são **w = [0.05448404, 0.04804330]**,
@@ -594,7 +558,7 @@ após processar a **amostra 1** dessa época (índices iniciados em 1).
 Foram feitas **289 avaliações** após atualizações, sempre sobre
 os 2000 pontos. Mesmo a última época ainda teve **2 atualizações**.
 
-### C — Figuras
+### C - Figuras
 
 ```python
 # Os dois painéis mostram as mesmas duas retas; separam somente as marcas de erro.
@@ -611,7 +575,7 @@ for ax, predictions, name in zip(axes, [final_predictions, pocket_predictions],
              'Fronteira pocket', 'darkgreen')
     ax.set_title(f'{name}: {np.mean(predictions == y2):.2%} de acurácia')
     ax.legend(fontsize=9)
-fig.suptitle('Figura 5 — Fronteiras final e pocket nos dados sobrepostos')
+fig.suptitle('Figura 5 - Fronteiras final e pocket nos dados sobrepostos')
 fig.tight_layout()
 
 fig, ax = plt.subplots(figsize=(10, 5))
@@ -619,8 +583,8 @@ epochs2 = np.arange(1, len(perceptron_overlap.accuracy_history) + 1)
 ax.plot(epochs2, perceptron_overlap.accuracy_history, color='crimson',
         label='Pesos atuais (classes 0 e 1)')
 ax.plot(epochs2, perceptron_overlap.pocket_history, color='darkgreen',
-        label='Melhor até agora — pocket (classes 0 e 1)')
-ax.set(title='Figura 6 — Acurácia por época: dados sobrepostos',
+        label='Melhor até agora - pocket (classes 0 e 1)')
+ax.set(title='Figura 6 - Acurácia por época: dados sobrepostos',
        xlabel='Época', ylabel='Acurácia', ylim=(0.45, 0.8))
 ax.legend()
 ax.grid(alpha=0.2)
@@ -637,11 +601,10 @@ pesos correntes **ao final** de cada época e o melhor pocket encontrado **em qu
 atualização** até aquele momento. Por isso, a curva pocket nunca diminui.
 
 ```python
-# Diagnósticos para interpretar a fronteira e o efeito da ordem das amostras.
 for name, prediction in [('Final', final_predictions), ('Pocket', pocket_predictions)]:
     matrix = np.array([[np.sum((y2 == real) & (prediction == predicted))
                         for predicted in (0, 1)] for real in (0, 1)])
-    print(name, '— matriz (linhas reais, colunas preditas):', matrix.tolist())
+    print(name, '- matriz (linhas reais, colunas preditas):', matrix.tolist())
 mean_norm = float(np.linalg.norm(X2, axis=1).mean())
 centers = np.array([[3, 3], [4, 4]])
 print('Norma média de x:', mean_norm)
@@ -652,8 +615,8 @@ print('Interseção pocket com x1=x2:', -perceptron_overlap.pocket_bias / percep
 ```
 
 ```text
-Final — matriz (linhas reais, colunas preditas): [[3, 997], [0, 1000]]
-Pocket — matriz (linhas reais, colunas preditas): [[755, 245], [333, 667]]
+Final - matriz (linhas reais, colunas preditas): [[3, 997], [0, 1000]]
+Pocket - matriz (linhas reais, colunas preditas): [[755, 245], [333, 667]]
 Norma média de x: 5.110833870217266
 Escores finais nos centros: [0.23758201 0.34010935]
 Escores pocket nos centros: [-0.01182852  0.00756198]
@@ -661,7 +624,7 @@ Interseção final com x1=x2: 0.6827447412279054
 Interseção pocket com x1=x2: 3.6100161461022897
 ```
 
-### D — Análise
+### D - Análise
 
 #### Por que o pocket é melhor que o estado final?
 
@@ -726,11 +689,11 @@ nem garante 100% ou uma época sem atualizações. Com $\eta=0$ não há aprendi
 
 | # | Quantidade | Valor |
 | --- | --- | --- |
-| 1 | Exercício 1 — w e b finais | w = [0.05049707, 0.02887168]; b = -0.25000000 |
-| 2 | Exercício 1 — épocas até convergir | 26 |
-| 3 | Exercício 1 — acurácia final | 100,00% |
-| 4 | Exercício 1 — épocas e acurácia final com η=1.0 | 37 épocas; 100,00% |
-| 5 | Exercício 2 — w e b finais | w = [0.05448404, 0.04804330]; b = -0.07000000 |
-| 6 | Exercício 2 — acurácia dos pesos finais | 50,15% |
-| 7 | Exercício 2 — acurácia dos pesos do pocket | 71,10% |
-| 8 | Exercício 2 — época em que o melhor do pocket ocorreu | 86 |
+| 1 | Exercício 1 - w e b finais | w = [0.05049707, 0.02887168]; b = -0.25000000 |
+| 2 | Exercício 1 - épocas até convergir | 26 |
+| 3 | Exercício 1 - acurácia final | 100,00% |
+| 4 | Exercício 1 - épocas e acurácia final com η=1.0 | 37 épocas; 100,00% |
+| 5 | Exercício 2 - w e b finais | w = [0.05448404, 0.04804330]; b = -0.07000000 |
+| 6 | Exercício 2 - acurácia dos pesos finais | 50,15% |
+| 7 | Exercício 2 - acurácia dos pesos do pocket | 71,10% |
+| 8 | Exercício 2 - época em que o melhor do pocket ocorreu | 86 |
