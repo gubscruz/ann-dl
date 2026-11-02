@@ -33,7 +33,8 @@ requirements.txt
 ```
 
 Os relatórios Data e [Perceptron](https://gubscruz.github.io/ann-dl/exercises/perceptron/) estão completos.
-As páginas MLP e VAE são espaços reservados para atividades futuras. Os scripts
+O relatório [VAE](docs/exercises/vae/index.md) também está completo.
+A página MLP está reservada para uma atividade futura. Os scripts
 estão em `code/` e as figuras são arquivos versionados. No relatório Data, os
 blocos de código usam snippets de `analise.py` e o resumo tem 13 linhas; no
 Perceptron, o código está diretamente na página e o resumo tem 8 linhas.
@@ -54,8 +55,8 @@ mkdocs build
 
 Esses comandos compilam o site com o relatório e as figuras versionados.
 Para reproduzir os cálculos, execute a análise separadamente, conforme abaixo.
-Os cálculos usam apenas NumPy, pandas, Matplotlib e scikit-learn, este último
-restrito à PCA e ao pré-processamento. Nenhum modelo é treinado.
+Na atividade Data, os cálculos usam NumPy, pandas, Matplotlib e scikit-learn, este último
+restrito à PCA e ao pré-processamento. Nessa atividade não há treino de modelos.
 As dependências MkDocs e Jupyter servem à apresentação do site e do notebook.
 
 Para executar apenas a análise:
@@ -149,3 +150,24 @@ O gerador é a fonte da entrega; `demonstracao_zero.md` preserva a demonstraçã
 algébrica do notebook original. As métricas e a tabela estão em `resultados/`.
 A geração das figuras usa o backend Agg e dispensa interface gráfica.
 A declaração de colaboração com IA está no relatório e no front matter.
+
+
+## Atividade 4 — VAE
+
+Relatório: [docs/exercises/vae/index.md](docs/exercises/vae/index.md).
+Endereço no portfólio: https://gubscruz.github.io/ann-dl/exercises/vae/
+
+Dois VAEs no MNIST (d = 16 e d = 2), com 20 épocas cada, seis figuras e
+análises. Para repetir os cálculos e atualizar os números do relatório:
+
+```bash
+python docs/exercises/vae/code/vae.py
+python docs/exercises/vae/code/gerar_relatorio.py
+mkdocs build
+```
+
+O primeiro comando baixa o MNIST em `data/` e treina em CPU. Os pesos ficam
+em `modelos/`, fora do controle de versão. As métricas e os históricos estão
+em `docs/exercises/vae/resultados/`. O teste só é avaliado após os dois treinos.
+As análises visuais descrevem a execução entregue; devem ser revistas se o
+treinamento for alterado. O uso de IA está declarado no front matter.

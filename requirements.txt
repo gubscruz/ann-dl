@@ -1,7 +1,7 @@
 # Cálculos da atividade: apenas as bibliotecas científicas permitidas.
-numpy==2.5.3
+numpy==2.5.4
 pandas==3.0.5
-matplotlib==3.11.1
+matplotlib==3.11.2
 scikit-learn==1.9.1
 
 # Empacotamento e execução do notebook complementar.
@@ -13,3 +13,8 @@ mkdocs==1.6.1
 mkdocs-material==9.7.7
 mkdocs-git-revision-date-localized-plugin==1.5.4
 pymdown-extensions==11.0.2
+
+# Atividade 4: VAE no MNIST.
+torch==2.15.0
+torchvision==0.29.2
+scipy==1.18.1
