@@ -1,6 +1,6 @@
 ---
 exercise: vae
-ai_use: "OpenAI Codex auxiliou na implementação, execução dos treinos, geração das figuras e redação das análises."
+ai_use: "OpenAI Codex auxiliou na implementação, geração das figuras e melhoria do texto"
 title: VAE no MNIST
 ---
 
@@ -30,12 +30,9 @@ nesta execução, sem ajustar o treino para aproximar os valores de referência.
 Uma segunda execução completa reproduziu exatamente as métricas de todas
 as épocas e os arquivos das seis figuras neste ambiente.
 
-O relatório segue o [enunciado da atividade](https://insper.github.io/ann-dl/pt/2026.2/exercises/vae/)
-e o [formato de entrega da disciplina](https://insper.github.io/ann-dl/2026.2/exercises/submission/).
-
 ## Exercício 1
 
-### A — Carregue e divida os dados
+### A - Carregue e divida os dados
 
 Usei o MNIST do `torchvision`: **50.000 imagens para treino, 10.000 para
 validação e 10.000 para teste**. A divisão foi feita com o gerador de semente
@@ -50,7 +47,7 @@ Os rótulos não entram na perda nem são usados para treinar o VAE. Eles servem
 apenas para identificar os dígitos nas figuras. O teste ficou reservado para
 a avaliação final e as visualizações pedidas, após o treino dos dois modelos.
 
-### B — Construa o modelo
+### B - Construa o modelo
 
 O encoder tem camadas **784 → 512 → 256**, com ReLU depois de cada camada.
 Duas cabeças **256 → 16** produzem μ e log σ². O decoder faz
@@ -74,7 +71,7 @@ quadrático corresponde a uma hipótese gaussiana. Aqui usamos a BCE solicitada.
 Usar `reduction="mean"` diretamente também dividiria pelos pixels e mudaria
 o peso relativo da reconstrução em relação à KL.
 
-### C — Treine
+### C - Treine
 
 Usei **Adam, taxa 0,001, lotes de 128 e 20 épocas**, sem parada antecipada.
 A semente foi reiniciada antes da construção de cada modelo. A ordem de
@@ -96,20 +93,20 @@ No teste, o VAE de dimensão 16 obteve **81,24 nats de
 reconstrução**, **20,15 nats de KL** e **101,40 nats de
 ELBO negativo por imagem**.
 
-![Figura 1 — Reconstrução e KL de treino e validação ao longo das 20 épocas.](figures/figura_1.png)
+![Figura 1 - Reconstrução e KL de treino e validação ao longo das 20 épocas.](figures/figura_1.png)
 
 **Figura 1.** Os termos são mostrados separadamente. A KL de validação foi
 **13,01** na primeira época e **20,10** na
 última, em nats por imagem. A curva de treino inclui pesos que mudam durante
 a época, enquanto a validação usa os pesos do fim da época.
 
-### D — Reconstruções e amostras
+### D - Reconstruções e amostras
 
 Na Figura 2, usei a primeira imagem de cada dígito no teste. Os índices,
 na ordem dos dígitos de 0 a 9, são **3, 2, 1, 18, 4, 8, 11, 0, 61, 7** (contagem a partir de zero).
 A linha inferior é `decoder(mu)`, sem ruído na reconstrução.
 
-![Figura 2 — Primeira imagem de teste de cada dígito e reconstrução pelo VAE d = 16.](figures/figura_2.png)
+![Figura 2 - Primeira imagem de teste de cada dígito e reconstrução pelo VAE d = 16.](figures/figura_2.png)
 
 **Figura 2.** Originais em cima e reconstruções a partir de μ embaixo.
 
@@ -118,11 +115,11 @@ Na Figura 3, executei `torch.manual_seed(0)`, sorteei
 sem passar uma imagem de entrada pelo encoder. Exibimos as probabilidades
 produzidas pela sigmoide em tons de cinza.
 
-![Figura 3 — Grade 8 × 8 de amostras do prior normal padrão, com semente 0.](figures/figura_3.png)
+![Figura 3 - Grade 8 × 8 de amostras do prior normal padrão, com semente 0.](figures/figura_3.png)
 
 **Figura 3.** Amostras geradas pelo VAE de dimensão 16.
 
-### E — Análise
+### E - Análise
 
 **1. Por que pagar mais KL?** Nas duas primeiras épocas, a KL de validação
 passou de **13,01 para 16,21**, enquanto a
@@ -156,38 +153,38 @@ imagens decodificadas, pois o decoder é não linear.
 
 ## Exercício 2
 
-### A — Treine um VAE 2-D
+### A - Treine um VAE 2-D
 
 Repeti o treino mudando apenas a dimensão latente para **d = 2**. Mantive
 a divisão dos dados, semente 42, arquitetura das camadas ocultas, β = 1,
 Adam com taxa 0,001, lotes de 128 e 20 épocas.
 
 | Dimensão latente | Reconstrução no teste | KL no teste | ELBO negativo no teste |
-| --- | ---: | ---: | ---: |
-| d = 16 | 81,24 | 20,15 | 101,40 |
-| d = 2 | 135,93 | 6,54 | 142,47 |
+| ---------------- | --------------------: | ----------: | ---------------------: |
+| d = 16           |                 81,24 |       20,15 |                 101,40 |
+| d = 2            |                135,93 |        6,54 |                 142,47 |
 
 Todos os valores estão em **nats por imagem**. Com duas dimensões,
 a reconstrução ficou **54,69 nats pior**, aumento de
 **67,31%**. A KL menor não significa que esse modelo seja melhor:
 ele paga menos regularização, mas perde muito mais na reconstrução.
 
-### B — O conjunto de teste codificado
+### B - O conjunto de teste codificado
 
 A Figura 4 mostra μ para **todas as 10.000 imagens de teste**. Cada cor
 identifica uma classe. O modelo não recebeu esses rótulos durante o treino.
 
-![Figura 4 — Médias das posteriores do teste no espaço latente 2-D, coloridas por classe.](figures/figura_4.png)
+![Figura 4 - Médias das posteriores do teste no espaço latente 2-D, coloridas por classe.](figures/figura_4.png)
 
 **Figura 4.** As classes formam regiões, mas não ficam completamente separadas.
 
-### C — O plano decodificado
+### C - O plano decodificado
 
 Usei `q = np.linspace(0.05, 0.95, 15)` e `norm.ppf(q)` em cada eixo,
 formando 225 pontos. As coordenadas vão de aproximadamente **−1,645 a
 1,645**. Na figura, z₁ cresce para a direita e z₂ cresce para cima.
 
-![Figura 5 — Grade 15 × 15 decodificada, com coordenadas dadas por quantis da normal.](figures/figura_5.png)
+![Figura 5 - Grade 15 × 15 decodificada, com coordenadas dadas por quantis da normal.](figures/figura_5.png)
 
 **Figura 5.** Os intervalos entre quantis consecutivos têm a mesma probabilidade
 em cada eixo e, pela independência de z₁ e z₂ no prior, os retângulos entre
@@ -197,7 +194,7 @@ Isso se refere às células delimitadas pelos pontos: as 225 imagens são
 avaliações nos pontos da grade, e as caudas além de 0,05 e 0,95 ficam de fora.
 Os pontos ficam mais próximos no centro, onde a normal é mais densa.
 
-### D — Interpolação
+### D - Interpolação
 
 Escolhi os índices de teste **0 (dígito 7)** e **1 (dígito 2)**, contando
 a partir de zero. São as duas primeiras imagens, sem escolha por aparência.
@@ -207,11 +204,11 @@ Na linha de cima, calculei `(1 - t) * xa + t * xb`. Na linha de baixo,
 usei o **VAE d = 16** e calculei `decoder((1 - t) * mu_a + t * mu_b)`.
 Os extremos da segunda linha são reconstruções, e não os pixels originais.
 
-![Figura 6 — Interpolação entre os índices 0 e 1, nos pixels e no latente d = 16.](figures/figura_6.png)
+![Figura 6 - Interpolação entre os índices 0 e 1, nos pixels e no latente d = 16.](figures/figura_6.png)
 
 **Figura 6.** Comparação dos dois caminhos entre o 7 e o 2.
 
-### E — Análise
+### E - Análise
 
 **1. Onde os dígitos se sobrepõem?** Na Figura 4, os dígitos **4, 7 e 9**
 se misturam à direita do centro, aproximadamente em μ₁ entre **0,1 e 1,2**
@@ -244,9 +241,9 @@ em vez de simplesmente ser sobreposta ao 7 original.
 
 ## Resumo dos resultados
 
-| # | Quantidade | Valor |
-| --- | --- | --- |
-| 1 | Ex. 1 — reconstrução, KL e ELBO negativo no teste (d = 16) | **81,24; 20,15; 101,40 nats/imagem** |
-| 2 | Ex. 1 — KL de validação na primeira e na última época | **13,01; 20,10 nats/imagem** |
-| 3 | Ex. 2 — reconstrução e KL no teste (d = 2) | **135,93; 6,54 nats/imagem** |
-| 4 | Ex. 2 — os dois índices de teste interpolados | **0 (dígito 7) e 1 (dígito 2)** |
+| #   | Quantidade                                                 | Valor                                |
+| --- | ---------------------------------------------------------- | ------------------------------------ |
+| 1   | Ex. 1 - reconstrução, KL e ELBO negativo no teste (d = 16) | **81,24; 20,15; 101,40 nats/imagem** |
+| 2   | Ex. 1 - KL de validação na primeira e na última época      | **13,01; 20,10 nats/imagem**         |
+| 3   | Ex. 2 - reconstrução e KL no teste (d = 2)                 | **135,93; 6,54 nats/imagem**         |
+| 4   | Ex. 2 - os dois índices de teste interpolados              | **0 (dígito 7) e 1 (dígito 2)**      |
